@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DDoS Attack Tool</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f0f0;
+            padding: 20px;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            text-align: center;
+            color: #333;
+        }
+        label {
+            font-weight: bold;
+            margin-bottom: 10px;
+            display: block;
+        }
+        input[type="text"], select {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 20px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+        button {
+            background-color: #4CAF50;
+            color: white;
+            padding: 12px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        .results {
+            margin-top: 20px;
+            padding: 10px;
+            background-color: #f7f7f7;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        .good {
+            color: #4CAF50;
+        }
+        .bad {
+            color: #F44336;
+        }
+        .down {
+            color: #FFC107;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>DDoS Attack Tool</h1>
+        <form id="attackForm">
+            <label for="urlInput">Enter URL or IP Address:</label>
+            <input type="text" id="urlInput" name="url" required>
+            <label for="attackType">Select Attack Type:</label>
+            <select id="attackType" name="attackType">
+                <option value="1">Attack without Proxy</option>
+                <option value="2">Attack with Proxy</option>
+            </select>
+            <button type="button" onclick="submitAttack()">Launch Attack</button>
+        </form>
+        <div class="results" id="attackResults">
+            <!-- Results will be displayed here -->
+        </div>
+    </div>
+
+    <script>
+        function submitAttack() {
+            var url = document.getElementById('urlInput').value.trim();
+            var attackType = document.getElementById('attackType').value;
+
+            fetch('/attack', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ url: url, attackType: attackType })
+            })
+            .then(response => response.json())
+            .then(data => {
+                var resultsDiv = document.getElementById('attackResults');
+                resultsDiv.innerHTML = ''; // Clear previous results
+                data.results.forEach(result => {
+                    var resultDiv = document.createElement('div');
+                    resultDiv.classList.add(result.status === 'good' ? 'good' : (result.status === 'bad' ? 'bad' : 'down'));
+                    resultDiv.textContent = result.message;
+                    resultsDiv.appendChild(resultDiv);
+                });
+            })
+            .catch(error => console.error('Error:', error));
+        }
+    </script>
+</body>
+</html>
